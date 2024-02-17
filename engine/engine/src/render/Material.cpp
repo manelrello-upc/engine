@@ -13,7 +13,7 @@ namespace engine
 	//	//i_engineContext.GetAssetProvider().L
 	//}
 
-	//LoadVisual es marca, únicament un flag de que es vol carregar, i al RENDER, ya si eso, es comença
+	//LoadVisual es marca, Ãºnicament un flag de que es vol carregar, i al RENDER, ya si eso, es comenÃ§a
 
 	MaterialGeneric::MaterialGeneric(std::shared_ptr<Asset<ShaderAssetVertex>> i_vertexShader, std::shared_ptr<Asset<ShaderAssetFragment>> i_fragmentShader)
 		: m_vertexShader(std::move(i_vertexShader))
@@ -35,29 +35,24 @@ namespace engine
 
 	const std::optional<std::span<const char>> MaterialGeneric::GetVertexShaderCode() const
 	{
-		if (m_vertexShader)
-		{
-			const std::optional<std::vector<char>>& data = m_vertexShader->GetData();
-			if (data)
-			{
-				std::span<const char> view (data->begin(), data->size());
-				return view;
-			}
-		}
-		return std::nullopt;
+		return m_vertexShader.get()->GetData();
 	}
 
 	const std::optional<std::span<const char>> MaterialGeneric::GetFragmentShaderCode() const
 	{
-		if (m_fragmentShader)
-		{
-			const std::optional<std::vector<char>>& data = m_fragmentShader->GetData();
-			if (data)
-			{
-				std::span<const char> view(data->begin(), data->size());
-				return view;
-			}
-		}
-		return std::nullopt;
+
+		return m_fragmentShader.get()->GetData();
+		
+		//if (m_fragmentShader)
+		//{
+		//	const std::optional<std::vector<char>>& data = m_fragmentShader->GetData();
+		//	if (data)
+		//	{
+		//		std::span<const char> view(data->begin(), data->size());
+		//		return view;
+		//	}
+		//}
+		//return std::nullopt;
+
 	}
 }

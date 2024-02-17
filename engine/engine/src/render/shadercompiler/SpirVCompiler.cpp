@@ -2,6 +2,8 @@
 #include "SpirVCompiler.h"
 #include "glslang/SPIRV/GlslangToSpv.h"
 
+#include <glslang/Public/ShaderLang.h>
+
 #include "spirv_cross/spirv_glsl.hpp"
 namespace engine
 {
@@ -258,6 +260,4 @@ namespace engine
 		// Compile to GLSL, ready to give to GL driver.
 		return glsl.compile();
 	}
-
-
 }

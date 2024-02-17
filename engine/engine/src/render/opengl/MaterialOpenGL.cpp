@@ -13,33 +13,38 @@ namespace engine
 {
 	GPUResourceMaterialOpenGL::GPUResourceMaterialOpenGL(const GPUResourceMaterialOpenGLParams& i_params, const SpirVCompiler& i_compiler)
 	{
-		std::string vertexShaderCode = "#version 450\n\
-			layout(location = 0) in vec3 aPos; // the position variable has attribute position 0\n\
-			layout(location = 0) out vec4 vertexColor; // specify a color output to the fragment shader\n\
-			void main()\n\
-			{\n\
-				gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor\n\
-				vertexColor = vec4(0.5, 0.0, 0.0, 1.0); // set the output variable to a dark-red color\n\
-			}";
+		//std::string vertexShaderCode = "#version 450\n\
+		//	layout(location = 0) in vec3 aPos; // the position variable has attribute position 0\n\
+		//	layout(location = 0) out vec4 vertexColor; // specify a color output to the fragment shader\n\
+		//	void main()\n\
+		//	{\n\
+		//		gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor\n\
+		//		vertexColor = vec4(0.5, 0.0, 0.0, 1.0); // set the output variable to a dark-red color\n\
+		//	}";
 
-		std::string fragmentShaderCode = "#version 430 core\n\
-			layout(location = 0) out vec4 FragColor;\n\
-			layout(location = 0) in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  \n\
-			void main()\n\
-			{\n\
-				FragColor = vertexColor;\n\
-			}";
+		//std::string fragmentShaderCode = "#version 430 core\n\
+		//	layout(location = 0) out vec4 FragColor;\n\
+		//	layout(location = 0) in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  \n\
+		//	void main()\n\
+		//	{\n\
+		//		FragColor = vertexColor;\n\
+		//	}";
+
+		std::string vertexShaderCode = "";
+		std::string fragmentShaderCode = "";
+
+		if (i_params.vertexShaderCode.has_value()) vertexShaderCode = i_params.vertexShaderCode.value();
+		if (i_params.fragmentShaderCode.has_value()) fragmentShaderCode = i_params.fragmentShaderCode.value();
 
 		
 
-		//i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Fragment, fragmentShaderCode);
-		//i_compiler.SPVtoGLSL(i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Vertex, vertexShaderCode));
-		//
+
 		std::string vc(i_params.vetexShaderCode.begin(), i_params.vetexShaderCode.end());
 		std::string fc(i_params.fragmentShaderCode.begin(), i_params.fragmentShaderCode.end());
 
 		std::vector<unsigned int> vertexShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Vertex, vc);
 		std::vector<unsigned int> fragmentShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Fragment, fc);
+
 
 
 

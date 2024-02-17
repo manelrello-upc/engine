@@ -8,10 +8,11 @@
 #include "OpenGLResult.h"
 #include "asset/AssetProvider.h"
 #include "RenderResourceProviderOpenGL.h"
+#include "asset/Asset.h"
 
 namespace engine
 {
-	
+
 	RendererOpenGL::RendererOpenGL(RenderResourceProviderOpenGL& i_resourceProvider)
 		: m_resourceProvider(i_resourceProvider)
 	{
@@ -66,10 +67,9 @@ namespace engine
 			return;
 		}
 
-
 		auto& meshGPU = m_resourceProvider.m_meshes[i_mesh.renderResource];
 		auto& materialGPU = m_resourceProvider.m_materials[i_material.renderResource];
-
+			
 		if (!meshGPU.IsReady())
 		{
 			return;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 namespace engine
 {
 	template<typename AssetType>
@@ -10,7 +12,12 @@ namespace engine
 			: Asset<void>(std::move(i_path))
 			, m_asset(std::move(i_assetData))
 		{
-
+			std::ifstream file(i_path);
+			assert(file.is_open());
+			std::ostringstream ss;
+			ss << file.rdbuf();
+			m_data = ss.str();
+			file.close();
 		}
 
 
@@ -18,6 +25,7 @@ namespace engine
 		{
 			return m_asset;
 		}
+
 
 		inline const std::optional<std::vector<char>>& GetData() const
 		{
@@ -33,7 +41,8 @@ namespace engine
 
 	private:
 		AssetType m_asset;
-		std::optional<std::vector<char>> m_data;
+		//std::optional<std::vector<char>> m_data;
+		std::optional<std::string> m_data;
 	};
 
 	template<>

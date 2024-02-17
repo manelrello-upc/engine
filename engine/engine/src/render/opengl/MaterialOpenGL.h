@@ -7,6 +7,7 @@ namespace engine
 {
 	struct GPUResourceMaterialOpenGLParams
 	{
+
 		inline GPUResourceMaterialOpenGLParams(std::span<const char> i_vetexShaderCode, std::span<const char> i_fragmentShaderCode)
 			: vetexShaderCode(std::move(i_vetexShaderCode))
 			, fragmentShaderCode(std::move(i_fragmentShaderCode))
@@ -19,6 +20,7 @@ namespace engine
 
 		std::span<const char> vetexShaderCode;
 		std::span<const char> fragmentShaderCode;
+
 	};
 
 	class SpirVCompiler;
