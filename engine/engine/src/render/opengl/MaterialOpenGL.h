@@ -7,7 +7,8 @@ namespace engine
 {
 	struct GPUResourceMaterialOpenGLParams
 	{
-
+		std::optional<std::string> vertexShaderCode;
+		std::optional<std::string> fragmentShaderCode;
 	};
 
 	class SpirVCompiler;

@@ -35,11 +35,13 @@ namespace engine
 
 	const std::optional<std::string> MaterialGeneric::GetVertexShaderCode() const
 	{
-		return std::nullopt;
+		return m_vertexShader.get()->GetData();
+		//return std::nullopt;
 	}
 
 	const std::optional<std::string> MaterialGeneric::GetFragmentShaderCode() const
 	{
-		return std::nullopt;
+		return m_fragmentShader.get()->GetData();
+		//return std::nullopt;
 	}
 }
