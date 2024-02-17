@@ -7,8 +7,20 @@ namespace engine
 {
 	struct GPUResourceMaterialOpenGLParams
 	{
-		std::optional<std::string> vertexShaderCode;
-		std::optional<std::string> fragmentShaderCode;
+
+		inline GPUResourceMaterialOpenGLParams(std::span<const char> i_vetexShaderCode, std::span<const char> i_fragmentShaderCode)
+			: vetexShaderCode(std::move(i_vetexShaderCode))
+			, fragmentShaderCode(std::move(i_fragmentShaderCode))
+		{
+
+		}
+		GPUResourceMaterialOpenGLParams() = default;
+		GPUResourceMaterialOpenGLParams(const GPUResourceMaterialOpenGLParams&) = default;
+		GPUResourceMaterialOpenGLParams(GPUResourceMaterialOpenGLParams&&) = default;
+
+		std::span<const char> vetexShaderCode;
+		std::span<const char> fragmentShaderCode;
+
 	};
 
 	class SpirVCompiler;

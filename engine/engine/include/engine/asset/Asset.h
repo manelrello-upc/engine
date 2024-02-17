@@ -26,17 +26,17 @@ namespace engine
 			return m_asset;
 		}
 
-		inline std::optional<std::string> GetData() const
+
+		inline const std::optional<std::vector<char>>& GetData() const
 		{
-			return *m_data;
-			//if (m_data.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
-			//{
-			//	return *m_data;
-			//}
-			//else
-			//{
-			//	return std::nullopt;
-			//}
+			if (m_data)
+			{
+				return *m_data;
+			}
+			else
+			{
+				return std::nullopt;
+			}
 		}
 
 	private:

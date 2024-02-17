@@ -7,6 +7,8 @@
 #include "engine/render/RenderContext.h"
 #include "engine/render/RenderResourceProvider.h"
 #include "engine/asset/AssetProvider.h"
+#include "load/Loader.h"
+#include "engine/ModuleMap.h"
 
 class Character: public engine::definition<Character, "Char", editor::ui_name("C")>
 {
@@ -36,43 +38,6 @@ public:
 	}
 };
 
-void Game::LoadBackgroundFunc(std::stop_token i_stopToken)
-{
-	std::span<std::shared_ptr<engine::Asset<void>>> materialAssets = m_material.GetAssets();
-	std::vector<std::shared_future<void>> futures;
-	futures.reserve(materialAssets.size());
-	for (std::shared_ptr<engine::Asset<void>> asset : materialAssets)
-	{
-		if (i_stopToken.stop_requested()) return;
-		futures.emplace_back(GetEngineContext().GetAssetProvider().Load(asset));
-	}
-
-	for (std::shared_future<void> loadFuture : futures)
-	{
-		if (i_stopToken.stop_requested()) return;
-		loadFuture.wait();
-	}
-
-	if (i_stopToken.stop_requested()) return;
-
-	std::shared_future<engine::RenderResource<engine::MaterialGeneric>::Id> materialFuture;
-	m_renderCalls.emplace_back([this, &materialFuture](const engine::RenderContext& i_context)
-		{
-			materialFuture = i_context.GetRenderResourceProvider().Load(m_material);
-		});
-
-	std::shared_future<engine::RenderResource<engine::MeshGeneric>::Id> meshFuture;
-	m_renderCalls.emplace_back([this, &meshFuture](const engine::RenderContext& i_context)
-		{
-			meshFuture = i_context.GetRenderResourceProvider().Load(m_mesh);
-		});
-
-	if (i_stopToken.stop_requested()) return;
-
-	materialFuture.wait();
-	meshFuture.wait();
-}
-
 engine::StaticMesh<Game::VertexData> Game::SampleMesh()
 {
 	std::vector<VertexData> dtaa;
@@ -97,13 +62,17 @@ std::shared_ptr<engine::Asset<engine::ShaderAssetFragment>> SampleFragmentShader
 	return std::make_shared<engine::Asset<engine::ShaderAssetFragment>>("shaders/shader1.fs", engine::ShaderAssetFragment());
 }
 
-Game::Game(const engine::Context& i_context)
-	: engine::GameModule(i_context)
+Game::Game(const engine::Context& i_context, const engine::ModuleMap& i_modules)
+	: engine::GameModule(i_context, i_modules)
 	, m_gameDb(std::make_unique<Gamedb>())
 	, m_mesh(SampleMesh())
 	, m_material(SampleVertexShader(), SampleFragmentShader())
 {
-	m_loadFuture = std::async(std::launch::async, [this]() { LoadBackgroundFunc(m_loadStop.get_token()); });
+	load::LoadModule& loadModule = GetModules().GetModule<load::LoadModule>();
+	auto loader = loadModule.CreateLoader();
+	loader->Enqueue(m_material);
+	loader->Enqueue(m_mesh);
+	m_loadFuture = load::Loader::Run(std::move(loader), m_loadStop.get_token(), GetEngineContext());
 }
 
 Game::~Game()
@@ -117,12 +86,6 @@ const engine::Db& Game::GetDefinitions() const
 	return *m_gameDb;
 }
 
-std::vector<std::unique_ptr<engine::Module>> Game::CreateDependencies() const
-{
-	std::vector<std::unique_ptr<engine::Module>> modules;
-	modules.emplace_back(std::make_unique<render2D::Render2DModule>(GetEngineContext()));
-	return modules;
-}
 
 engine::RenderClient& Game::GetRenderClient()
 {
@@ -141,21 +104,23 @@ void Game::Update(const engine::UpdateContext& i_uc)
 
 void Game::Render(std::stop_token i_stopToken, const engine::RenderContext& i_renderContext)
 {
-	decltype(m_renderCalls) currentList;
-	currentList.swap(m_renderCalls);
-	for (auto func : currentList)
-	{
-		func(i_renderContext);
-	}
-
 	i_renderContext.GetRenderer().Render(m_mesh, m_material);
 }
 
 namespace engine
 {
-	std::unique_ptr<engine::GameModule> CreateGame(const engine::Context& i_context)
+	std::unique_ptr<engine::GameModule> CreateGame(const engine::Context& i_context, const engine::ModuleMap& i_modules)
 	{
-		return std::make_unique<Game>(i_context);
+		return std::make_unique<Game>(i_context, i_modules);
 	}
+
+	std::vector<std::unique_ptr<Module>> CreateModules(const engine::Context& i_context)
+	{
+		std::vector<std::unique_ptr<engine::Module>> modules;
+		modules.emplace_back(std::make_unique<render2D::Render2DModule>(i_context));
+		modules.emplace_back(std::make_unique<load::LoadModule>(i_context));
+		return modules;
+	}
+
 }
 

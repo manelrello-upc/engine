@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/EngineStdAfx.h"
+#include "load/ModuleStdAfx.h"
 
 //engine includes
 #include "engine/definition/Field.hpp"
@@ -13,6 +14,8 @@
 //render2d module includes
 #include "render2d/Render2DModule.h"
 
+//load module includes
+#include "load/LoadModule.h"
 
 //Fwds
 namespace engine

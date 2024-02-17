@@ -36,10 +36,15 @@ namespace engine
 		if (i_params.vertexShaderCode.has_value()) vertexShaderCode = i_params.vertexShaderCode.value();
 		if (i_params.fragmentShaderCode.has_value()) fragmentShaderCode = i_params.fragmentShaderCode.value();
 
-		//i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Fragment, fragmentShaderCode);
-		//i_compiler.SPVtoGLSL(i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Vertex, vertexShaderCode));
-		std::vector<unsigned int> vertexShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Vertex, vertexShaderCode);
-		std::vector<unsigned int> fragmentShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Fragment, fragmentShaderCode);
+		
+
+
+		std::string vc(i_params.vetexShaderCode.begin(), i_params.vetexShaderCode.end());
+		std::string fc(i_params.fragmentShaderCode.begin(), i_params.fragmentShaderCode.end());
+
+		std::vector<unsigned int> vertexShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Vertex, vc);
+		std::vector<unsigned int> fragmentShaderCompiled = i_compiler.GLSLtoSPV(SpirVCompiler::ShaderStage::Fragment, fc);
+
 
 
 
